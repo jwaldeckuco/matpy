@@ -26,14 +26,14 @@ def quitProgram():
 def getInputMatrix():
     global matrix1
     # comment if using the matrix below for testing
-    # temp = input("Give me a matrix (in the form {x11,x12,x13;x21,x22,x23;} but without the xs\n")
-    # augmented = input("Is this an augmented matrix (y/n)? ")
+    temp = input("Give me a matrix (in the form {x11,x12,x13;x21,x22,x23;} but without the xs\n")
+    augmented = input("Is this an augmented matrix (y/n)? ")
 
     # testing matrix
     # uncomment below for testing
     #temp = "{0,2,3,4;-3,2,-2,0;3,0,2,-2;}"
-    temp = "{1,0,1,-6;3,2,-1,4;2,1,0,-1;}"
-    augmented = "y"
+    # temp = "{1,0,1,-6;3,2,-1,4;2,1,0,-1;}"
+    # augmented = "y"
 
     if augmented == "y":
         augmented = True
