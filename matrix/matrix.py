@@ -1,6 +1,7 @@
 
 from fractions import Fraction
 import copy
+import fractions
 
 
 class Matrix:
@@ -24,7 +25,11 @@ class Matrix:
             tempRowString = row.split(",")
 
             for value in tempRowString:
-                tempRow.append(float(value))
+                tempRow.append(int(value))
+                # if int(value) == 0:
+                #     tempRow.append(int(value))
+                # else:
+                #     tempRow.append(float(value))
             temp.append(tempRow)
 
         # if all rows are the same length continue
@@ -101,10 +106,12 @@ class Matrix:
         temp = []
 
         for value in row:
-            if int(scalar) != 0:
+            if type(scalar) != int:
                 tempValue = Fraction(value) * scalar
                 if type(tempValue) == Fraction and tempValue.denominator == 1:
                     tempValue = int(tempValue)
+                elif type(tempValue) == Fraction and tempValue.numerator == 0:
+                    tempValue = 0
             else:
                 tempValue = value * scalar
 
@@ -115,24 +122,6 @@ class Matrix:
         return copy.deepcopy(self)
 
     def display(self):
-        # columns = len(self.matrix[0])
-        # headerString = ""
-
-        # for i in range(columns):
-        #     headerString += '{: >10}'.format("x" + str(i + 1))
-        
-        # print(headerString)
-        # # create row strings
-        # for i, row in enumerate(self.matrix):
-        #     rowString = "r" + str(i + 1)
-
-        #     for i in range(len(row)):
-        #         rowString = rowString + '{: >10f}'.format((row[i]))
-
-        #         if i < len(row) - 1:
-        #             rowString = rowString + ","
-
-        #     print(rowString)
         print(self.getStringRep())
 
     def getStringRep(self):
@@ -148,7 +137,17 @@ class Matrix:
             rowString = "r" + str(i + 1)
 
             for i in range(len(row)):
-                rowString = rowString + '{: >10f}'.format((row[i]))
+                if type(row[i]) == float:
+                    rowString = rowString + '{: >10f}'.format((row[i]))
+                
+                elif type(row[i]) == Fraction:
+                    num = row[i].numerator
+                    den = row[i].denominator
+
+                    rowString = rowString + '{: >10}'.format(str(num) + "/" + str(den))
+
+                else:
+                    rowString = rowString + '{: >10}'.format(int(row[i]))
 
                 if i < len(row) - 1:
                     rowString = rowString + ","

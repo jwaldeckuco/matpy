@@ -20,8 +20,8 @@ def quitProgram():
 
 
 def getInputMatrix():
-    # temp = input("Give me a matrix (in the form {x11,x12,x13;x21,x22,x23;} but without the xs\n")
-    temp = "{0,2,3,4;-3,2,-2,0;3,0,2,-2;}"
+    temp = input("Give me a matrix (in the form {x11,x12,x13;x21,x22,x23;} but without the xs\n")
+    #temp = "{0,2,3,4;-3,2,-2,0;3,0,2,-2;}"
     parseStatus = matrix1.parse(temp)
     # if there is an error ask again
     # right now only uneven rows are detected
@@ -44,6 +44,7 @@ def displayActionMenu():
     print("4. Scale a row")
     print("5. Show history")
     print("6. Export history")
+    print("u. Undo last operation")
     print("q. Quit")
     print("--------------------------")
 
@@ -118,6 +119,7 @@ def subtractRowsAction():
 
     print("Operation Complete!")
 
+
 def scaleRowAction():
     temp = input("Which row do you want to scale? ")
     if temp == "b" or temp == "":
@@ -149,6 +151,11 @@ def scaleRowAction():
     history.add(operationresult.OperationResult(["scale", targetRow, scalar], matrix1))
 
 
+def undo():
+    global matrix1
+    matrix1 = history.undo().getMatrix()
+    print("I am undone")
+
 def main():
     greet()
     getInputMatrix()
@@ -157,6 +164,7 @@ def main():
     # main loop
     while(not quit):
         print()
+        print("current: ")
         matrix1.display()
         print()
 
@@ -181,9 +189,13 @@ def main():
 
         elif temp == "5":
             history.display()
-            
+
         elif temp == "6":
             history.writeFile()
+        
+        elif temp == "u":
+            undo()
+        
 
 if __name__ == "__main__":
     main()
