@@ -18,8 +18,8 @@ def quitProgram():
 
 
 def getInputMatrix():
-    # temp = input("Give me a matrix (in the form {x11,x12,x13;x21,x22,x23;}\n")
-    temp = "{0,2,3,4;-3,2,-2,0;3,0,2,-2;}"
+    temp = input("Give me a matrix (in the form {x11,x12,x13;x21,x22,x23;}\n")
+    #temp = "{0,2,3,4;-3,2,-2,0;3,0,2,-2;}"
     parseStatus = matrix1.parse(temp)
     # if there is an error ask again
     # right now only uneven rows are detected
