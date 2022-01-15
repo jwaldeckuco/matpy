@@ -1,8 +1,6 @@
 
-# from decimal import Decimal
-from email import header
 from fractions import Fraction
-from wsgiref import headers
+import copy
 
 
 class Matrix:
@@ -58,13 +56,7 @@ class Matrix:
         
     def performRowAddOrSubOp(self, targetRow, sourceRow, scalar, opType):
         scaledSource = []
-    
-        # scale the source row
-        # for value in sourceRow:
-        #     temp = value * scalar
-        #     scaledSource.append(temp)
         scaledSource = self.returnScaled(self.matrix[sourceRow - 1], scalar)
-        print(scaledSource)
 
         for i in range(len(self.matrix[targetRow -1])):
             if opType == 1:
@@ -111,7 +103,7 @@ class Matrix:
         for value in row:
             if int(scalar) != 0:
                 tempValue = Fraction(value) * scalar
-                if tempValue.denominator == 1:
+                if type(tempValue) == Fraction and tempValue.denominator == 1:
                     tempValue = int(tempValue)
             else:
                 tempValue = value * scalar
@@ -119,15 +111,39 @@ class Matrix:
             temp.append(tempValue)
         return temp
         
+    def deepCopy(self):
+        return copy.deepcopy(self)
+
     def display(self):
+        # columns = len(self.matrix[0])
+        # headerString = ""
+
+        # for i in range(columns):
+        #     headerString += '{: >10}'.format("x" + str(i + 1))
+        
+        # print(headerString)
+        # # create row strings
+        # for i, row in enumerate(self.matrix):
+        #     rowString = "r" + str(i + 1)
+
+        #     for i in range(len(row)):
+        #         rowString = rowString + '{: >10f}'.format((row[i]))
+
+        #         if i < len(row) - 1:
+        #             rowString = rowString + ","
+
+        #     print(rowString)
+        print(self.getStringRep())
+
+    def getStringRep(self):
         columns = len(self.matrix[0])
-        headerString = ""
+        string = ""
 
         for i in range(columns):
-            headerString += '{: >10}'.format("x" + str(i + 1))
+            string += '{: >10}'.format("x" + str(i + 1))
         
-        print(headerString)
-        # create row strings
+        string += "\n"
+
         for i, row in enumerate(self.matrix):
             rowString = "r" + str(i + 1)
 
@@ -136,5 +152,6 @@ class Matrix:
 
                 if i < len(row) - 1:
                     rowString = rowString + ","
-
-            print(rowString)
+            rowString += "\n"
+            string += rowString
+        return string
