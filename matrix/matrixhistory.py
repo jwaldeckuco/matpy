@@ -10,7 +10,7 @@ class MatrixHistory:
     def undo(self):
         if len(self.history) > 1:
             self.history.pop()
-            
+
         return self.history[-1]
 
     def add(self, operationResult):
@@ -43,8 +43,9 @@ class MatrixHistory:
         return string
 
     def writeFile(self):
-        file = open("save.txt", "w")
+        file = open("export.txt", "w")
         file.write(self.getStringRep())
         file.close()
+        print("History exported!")
             
         

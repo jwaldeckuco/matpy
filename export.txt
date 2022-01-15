@@ -1,0 +1,35 @@
+operation: init 
+ result:
+        x1        x2        x3
+r1         1,         0,         1,        -6
+r2         0,         1,        -2,        11
+r3         0,         0,         0,         0
+
+operation: subtract 3r1 from r2
+ result:
+        x1        x2        x3
+r1         1,         0,         1,        -6
+r2         0,         2,        -4,        22
+r3         2,         1,         0,        -1
+
+operation: scale r2 by 1/2
+ result:
+        x1        x2        x3
+r1         1,         0,         1,        -6
+r2         0,         1,        -2,        11
+r3         2,         1,         0,        -1
+
+operation: subtract 2r1 from r3
+ result:
+        x1        x2        x3
+r1         1,         0,         1,        -6
+r2         0,         1,        -2,        11
+r3         0,         1,        -2,        11
+
+operation: subtract 1r2 from r3
+ result:
+        x1        x2        x3
+r1         1,         0,         1,        -6
+r2         0,         1,        -2,        11
+r3         0,         0,         0,         0
+

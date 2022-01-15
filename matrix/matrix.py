@@ -2,42 +2,46 @@
 from fractions import Fraction
 import copy
 import fractions
+import exception
+from exception.exceptions import UnevenRowsError
+from matrix import row
 
 
 class Matrix:
-    def __init__(self) -> None:
+    def __init__(self):
         self.matrix = []
+        self.augmented = False
 
     def parse(self, inputString):
+        # create a temp list to hold the rows
         temp = []
-        # remove brackets
+
+        # remove formatting characters
+        # remove curly braces
         strippedString = inputString.lstrip("{").rstrip("}")
+        # remove whitespace
         strippedString = strippedString.replace(" ", "")
-        
+        # result: "x11,x12,x13;x21,x22,x23;...xmn;
+
         # parse rows
+        # creates rowStrings list by splitting inputString on ";"
         rowStrings = strippedString.split(";")
-        # remove the empty element created. Need to fix this later
+        # remove the empty list entry created. Need to fix this later
         rowStrings.pop(-1)
 
         # parse values
-        for row in rowStrings:
-            tempRow = []
-            tempRowString = row.split(",")
-
-            for value in tempRowString:
-                tempRow.append(int(value))
-                # if int(value) == 0:
-                #     tempRow.append(int(value))
-                # else:
-                #     tempRow.append(float(value))
-            temp.append(tempRow)
+        for rowString in rowStrings:
+            temp.append(row.Row(rowString))
 
         # if all rows are the same length continue
         for i in range(len(temp) - 1):
-            if len(temp[i]) != len(temp[i + 1]):
-                return "uneven rows error"
+            if temp[i].getLength() != temp[i + 1].getLength():
+                raise UnevenRowsError
         
         self.matrix = temp
+
+    def setAugmented(self, augmented):
+        self.augmented = augmented
 
     def interchange(self, row1, row2):
         if self.validateRowNumbers(row1, row2):
@@ -60,14 +64,12 @@ class Matrix:
         self.performRowAddOrSubOp(targetRow, sourceRow, scalar, -1)
         
     def performRowAddOrSubOp(self, targetRow, sourceRow, scalar, opType):
-        scaledSource = []
-        scaledSource = self.returnScaled(self.matrix[sourceRow - 1], scalar)
-
-        for i in range(len(self.matrix[targetRow -1])):
-            if opType == 1:
-                self.matrix[targetRow - 1][i] += scaledSource[i]
-            else:
-                self.matrix[targetRow - 1][i] -= scaledSource[i]
+        scaledSource = self.matrix[sourceRow - 1].getScaledCopy(scalar)
+        
+        if opType == 1:
+            self.matrix[targetRow - 1].add(scaledSource)
+        else:
+            self.matrix[targetRow - 1].subtract(scaledSource)
         
     def validateRowOpInputs(self, targetRow, sourceRow, scalar):
         if self.validateRowNumbers(targetRow, sourceRow):
@@ -94,13 +96,16 @@ class Matrix:
             return "Row number not valid"
 
     def scale(self, row, scalar):
+        # validate row number
         if self.validateRowNumber(row):
             return self.validateRowNumber(row)
         
+        # validate scalar value
         if self.validateScalar(scalar):
             return self.validateScalar(scalar)
 
-        self.matrix[row - 1] = self.returnScaled(self.matrix[row - 1], scalar)
+        # self.matrix[row - 1] = self.returnScaled(self.matrix[row - 1], scalar)
+        self.matrix[row - 1].scale(scalar)
 
     def returnScaled(self, row, scalar):
         temp = []
@@ -125,7 +130,11 @@ class Matrix:
         print(self.getStringRep())
 
     def getStringRep(self):
-        columns = len(self.matrix[0])
+        if not self.augmented:
+            columns = self.matrix[0].getLength()
+        else:
+            columns = self.matrix[0].getLength() - 1
+
         string = ""
 
         for i in range(columns):
@@ -134,23 +143,7 @@ class Matrix:
         string += "\n"
 
         for i, row in enumerate(self.matrix):
-            rowString = "r" + str(i + 1)
+            rowString = "r" + str(i + 1) + row.getFormattedString() + "\n"
 
-            for i in range(len(row)):
-                if type(row[i]) == float:
-                    rowString = rowString + '{: >10f}'.format((row[i]))
-                
-                elif type(row[i]) == Fraction:
-                    num = row[i].numerator
-                    den = row[i].denominator
-
-                    rowString = rowString + '{: >10}'.format(str(num) + "/" + str(den))
-
-                else:
-                    rowString = rowString + '{: >10}'.format(int(row[i]))
-
-                if i < len(row) - 1:
-                    rowString = rowString + ","
-            rowString += "\n"
             string += rowString
         return string

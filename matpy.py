@@ -3,13 +3,17 @@ from matrix import matrix
 from fractions import Fraction
 from matrix import matrixhistory
 from matrix import operationresult
+from exception import exceptions
 
+# globals
 matrix1 = matrix.Matrix()
 history = matrixhistory.MatrixHistory()
 
 def greet():
+    # user greeting
     print("________________________")
     print("\tMATPY")
+    print("Matrix Algebra Row Operation Calculator")
     print("________________________")
     print()
 
@@ -20,16 +24,28 @@ def quitProgram():
 
 
 def getInputMatrix():
-    temp = input("Give me a matrix (in the form {x11,x12,x13;x21,x22,x23;} but without the xs\n")
-    #temp = "{0,2,3,4;-3,2,-2,0;3,0,2,-2;}"
-    parseStatus = matrix1.parse(temp)
-    # if there is an error ask again
-    # right now only uneven rows are detected
-    while parseStatus:
-        print(parseStatus)
-        temp = input("Let's try that again:\n")
-        parseStatus = matrix1.parse(temp)
+    global matrix1
+    # comment if using the matrix below for testing
+    # temp = input("Give me a matrix (in the form {x11,x12,x13;x21,x22,x23;} but without the xs\n")
+    # augmented = input("Is this an augmented matrix (y/n)? ")
 
+    # testing matrix
+    # uncomment below for testing
+    #temp = "{0,2,3,4;-3,2,-2,0;3,0,2,-2;}"
+    temp = "{1,0,1,-6;3,2,-1,4;2,1,0,-1;}"
+    augmented = "y"
+
+    if augmented == "y":
+        augmented = True
+    else: 
+        augmented = False
+
+    try:
+        matrix1.parse(temp)
+    except:
+        print("Parsing error... please run again")
+    
+    matrix1.setAugmented(augmented)
     history.add(operationresult.OperationResult(["init"], matrix1))
 
 
