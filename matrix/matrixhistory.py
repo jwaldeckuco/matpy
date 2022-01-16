@@ -3,6 +3,9 @@ class MatrixHistory:
     def __init__(self):
         self.history = []
 
+    def reset(self):
+        self.history = []
+        
     def getLast(self):
         if len(self.history) > 0:
             return self.history[-1]

@@ -5,6 +5,8 @@ from fractions import Fraction
 from matrix import matrixhistory
 from matrix import operationresult
 from exception import exceptions
+# from ui import wxui
+# import wx
 
 # globals
 matrix1 = matrix.Matrix()
@@ -52,6 +54,8 @@ def getInputMatrix():
         except:
             print("Parsing error... please try again")
             goodParse = False
+        finally:
+            goodParse = True
   
     matrix1.setAugmented(augmented)
     history.add(operationresult.OperationResult(["init"], matrix1))
@@ -69,6 +73,7 @@ def displayActionMenu():
     print("5. Show history")
     print("6. Export history")
     print("u. Undo last operation")
+    print("n. Start over with a new matrix")
     print("q. Quit")
     print("--------------------------")
 
@@ -180,7 +185,24 @@ def undo():
     matrix1 = history.undo().getMatrix()
     print("I am undone")
 
+
+def new():
+    global history
+    temp = input("Are you sure (y/n)? ")
+    if temp == "n" or temp == "":
+        print("Ok, going back.")
+        return
+    
+    history.reset()
+    print()
+    getInputMatrix()
+
+
 def main():
+    # app = wx.App()
+    # frame = wxui.WxUI()
+    # app.MainLoop()
+    
     greet()
     getInputMatrix()
     
@@ -219,6 +241,9 @@ def main():
         
         elif temp == "u":
             undo()
+
+        elif temp == "n":
+            new()
         
 
 if __name__ == "__main__":
