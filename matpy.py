@@ -7,13 +7,30 @@ from matrix import operationresult
 from exception import exceptions
 # from ui import wxui
 # import wx
+import os
+import time
 
 # globals
 matrix1 = matrix.Matrix()
 history = matrixhistory.MatrixHistory()
+dev = False
+
+clearScreen = lambda: os.system('cls' if os.name in ('nt', 'dos') else 'clear')
+
+
+def waitAndClear(message=""):
+    clearScreen()
+
+    if message:
+        print(message)
+
+    time.sleep(1)
+
+    clearScreen()
 
 
 def greet():
+    
     # user greeting
     print("________________________")
     print("\tMATPY")
@@ -29,7 +46,7 @@ def quitProgram():
 
 def getInputMatrix():
     global matrix1
-    dev = True
+    
     goodParse = True
     firstTry = True
 
@@ -71,10 +88,12 @@ def displayRowOpMenu():
     print("  2. Add a row to a row")
     print("  3. Subtract a row from a row")
     print("  4. Scale a row")
-    print("  (u)ndo last operation")
+    if history.undoAvailable():
+        print("  (u)ndo last operation")
     print("  (b)ack")
     print("  (q)uit")
     print("--------------------------")
+
 
 def displayMainMenu():
     # ask what to do
@@ -120,8 +139,8 @@ def interchangeRowsAction():
 
     history.add(operationresult.OperationResult(["interchange", row1 + 1, row2 + 1], matrix1))
 
-    print("Operation complete!")
-
+    waitAndClear("Operation Complete")
+    
 
 def getOperationInputs():
     targetRow = int(input("Which row do you want to perform the operation on? "))
@@ -154,7 +173,7 @@ def addRowsAction():
 
     history.add(operationresult.OperationResult(["add", inputs[0] + 1, inputs[1] + 1, scalar], matrix1))
 
-    print("Operation Complete!")
+    waitAndClear("Operation Complete!")
 
 
 def subtractRowsAction():
@@ -169,7 +188,7 @@ def subtractRowsAction():
 
     history.add(operationresult.OperationResult(["subtract", inputs[0] + 1, inputs[1] + 1, scalar], matrix1))
 
-    print("Operation Complete!")
+    waitAndClear("Operation Complete!")
 
 
 def scaleRowAction():
@@ -199,11 +218,14 @@ def scaleRowAction():
    
     history.add(operationresult.OperationResult(["scale", targetRow + 1, scalar], matrix1))
 
+    waitAndClear("Operation Complete")
+
 
 def undo():
     global matrix1
     matrix1 = history.undo().getMatrix()
-    print("I am undone")
+    
+    waitAndClear("I am undone")
 
 
 def new():
@@ -220,6 +242,9 @@ def new():
 
 def rowOpsMenu():
     temp = ""
+
+    clearScreen()
+
     while True:
         print()
         print("Current: ")
@@ -261,12 +286,15 @@ def main():
     # frame = wxui.WxUI()
     # app.MainLoop()
     
+    clearScreen()
+
     greet()
     getInputMatrix()
     
     quit = False
     # main loop
     while(not quit):
+        
         print()
         print("Current: ")
         print("------------------------------------------")
@@ -285,14 +313,18 @@ def main():
             rowOpsMenu()
         
         elif temp == "h":
+            clearScreen()
             history.display()
+            resume = input("Press enter to continue...")
 
         elif temp == "e":
             history.writeFile()
+            waitAndClear("history exported")
 
         elif temp == "n":
             new()
-        
+
+        clearScreen()
 
 if __name__ == "__main__":
     main()

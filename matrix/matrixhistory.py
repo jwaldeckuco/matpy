@@ -51,4 +51,5 @@ class MatrixHistory:
         file.close()
         print("History exported!")
             
-        
+    def undoAvailable(self):
+        return len(self.history) > 1
