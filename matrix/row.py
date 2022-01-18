@@ -1,11 +1,12 @@
 
-import enum
 from fractions import Fraction
 import copy
+from matrix import cell
 
 class Row:
     def __init__(self, inputString=""):
         self.row = []
+        # TODO: update to exception handling
         if not inputString == "":
             self.parse(inputString)
 
@@ -17,13 +18,13 @@ class Row:
         # result: a list of string values
 
         for value in tempRowStrings:
-            tempRow.append(int(value))
+            tempRow.append(cell.Cell(value))
         
         self.row = tempRow
 
     # element access
     def getColValue(self, index):
-        return self.row[index]
+        return self.row[index].value
     
     # row operations
     def scale(self, scalar):
@@ -33,17 +34,8 @@ class Row:
         temp = []
 
         for value in self.row:
-            if type(scalar) != int:
-                tempValue = Fraction(value) * scalar
-
-                if type(tempValue) == Fraction and tempValue.denominator == 1:
-                    tempValue = int(tempValue)
-                elif type(tempValue) == Fraction and tempValue.numerator == 0:
-                    tempValue = 0
-            else:
-                tempValue = value * scalar
-            temp.append(tempValue)
-
+            temp.append(value.getScaledCopy(scalar))
+        
         return copy.deepcopy(temp)
 
     def getScaledCopy(self, scalar=1):
@@ -53,27 +45,17 @@ class Row:
 
     def add(self, sourceRow):
          for i in range(len(self.row)):
-            self.row[i] += sourceRow.getColValue(i)
+            self.row[i].add(sourceRow.getColValue(i))
 
     def subtract(self, sourceRow):
         for i in range(len(self.row)):
-            self.row[i] -= sourceRow.getColValue(i)
+            self.row[i].subtract(sourceRow.getColValue(i))
     
     def getFormattedString(self):
         rowString = ""
 
         for i in range(len(self.row)):
-            if type(self.row[i]) == float:
-                rowString += '{: >10f}'.format((self.row[i]))
-                
-            elif type(self.row[i]) == Fraction:
-                num = self.row[i].numerator
-                den = self.row[i].denominator
-
-                rowString += '{: >10}'.format(str(num) + "/" + str(den))
-
-            else:
-                rowString += '{: >10}'.format(int(self.row[i]))
+            rowString += self.row[i].getFormattedString()
 
             if i < len(self.row) - 1:
                 rowString = rowString + ","  

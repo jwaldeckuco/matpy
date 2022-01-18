@@ -1,35 +1,35 @@
 operation: init 
  result:
-        x1        x2        x3
-r1         1,         0,         1,        -6
-r2         0,         1,        -2,        11
-r3         0,         0,         0,         0
+        x1      x2      x3
+r1        1,       0,       1,      -6
+r2        3,       2,      -1,       4
+r3        2,       1,       0,      -1
 
-operation: subtract 3r1 from r2
+operation: interchange r1 and r2
  result:
-        x1        x2        x3
-r1         1,         0,         1,        -6
-r2         0,         2,        -4,        22
-r3         2,         1,         0,        -1
+        x1      x2      x3
+r1        3,       2,      -1,       4
+r2        1,       0,       1,      -6
+r3        2,       1,       0,      -1
 
-operation: scale r2 by 1/2
+operation: scale r1 by 3
  result:
-        x1        x2        x3
-r1         1,         0,         1,        -6
-r2         0,         1,        -2,        11
-r3         2,         1,         0,        -1
+        x1      x2      x3
+r1        9,       6,      -3,      12
+r2        1,       0,       1,      -6
+r3        2,       1,       0,      -1
 
-operation: subtract 2r1 from r3
+operation: add 1/2r3 to r2
  result:
-        x1        x2        x3
-r1         1,         0,         1,        -6
-r2         0,         1,        -2,        11
-r3         0,         1,        -2,        11
+        x1      x2      x3
+r1        9,       6,      -3,      12
+r2        2,     1/2,       1,   -13/2
+r3        2,       1,       0,      -1
 
-operation: subtract 1r2 from r3
+operation: subtract 1/2r1 from r3
  result:
-        x1        x2        x3
-r1         1,         0,         1,        -6
-r2         0,         1,        -2,        11
-r3         0,         0,         0,         0
+        x1      x2      x3
+r1        9,       6,      -3,      12
+r2        2,     1/2,       1,   -13/2
+r3     -5/2,      -2,     3/2,      -7
 

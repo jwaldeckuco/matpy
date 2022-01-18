@@ -12,6 +12,7 @@ from exception import exceptions
 matrix1 = matrix.Matrix()
 history = matrixhistory.MatrixHistory()
 
+
 def greet():
     # user greeting
     print("________________________")
@@ -28,7 +29,7 @@ def quitProgram():
 
 def getInputMatrix():
     global matrix1
-    dev = False
+    dev = True
     goodParse = True
     firstTry = True
 
@@ -61,20 +62,29 @@ def getInputMatrix():
     history.add(operationresult.OperationResult(["init"], matrix1))
 
 
-def displayActionMenu():
+def displayRowOpMenu():
     # ask what to do
     print("What do you want to do?")
         
     # elementary ops
-    print("1. Interchange rows")
-    print("2. Add a row to a row")
-    print("3. Subtract a row from a row")
-    print("4. Scale a row")
-    print("5. Show history")
-    print("6. Export history")
-    print("u. Undo last operation")
-    print("n. Start over with a new matrix")
-    print("q. Quit")
+    print("  1. Interchange rows")
+    print("  2. Add a row to a row")
+    print("  3. Subtract a row from a row")
+    print("  4. Scale a row")
+    print("  (u)ndo last operation")
+    print("  (b)ack")
+    print("  (q)uit")
+    print("--------------------------")
+
+def displayMainMenu():
+    # ask what to do
+    print("What do you want to do?")
+        
+    print("  (r)ow Operations")
+    print("  (h)istory")
+    print("  (e)xport history")
+    print("  (n)ew matrix")
+    print("  (q)uit")
     print("--------------------------")
 
 
@@ -82,69 +92,82 @@ def interchangeRowsAction():
     print("Enter the rows you want to interchange, separated by a comma: ")
     inputRows = input()
     if inputRows == "b" or inputRows == "":
-        print("Going back")
+        print("Gotcha. Returning to the main menu")
         return
+
     if len(inputRows) < 3:
-        print("Invalid row. Going back")
+        print("You didn't give me two rows. Returning to the main menu")
         return
 
+    inputRows = inputRows.split(",")
+
+    for row in inputRows:
+        try: 
+            int(row) - 1
+
+        except ValueError:
+            print(f"\nHA! \'{row}\' isn't valid input. I cast ye back to the main menu")
+            return 
+
+    row1 = int(inputRows[0]) - 1
+    row2 = int(inputRows[-1]) - 1
+   
     try:
-        row1 = int(inputRows[0])
-        row2 = int(inputRows[-1])
-    except:
-        print("Invalid row... or something. Going back.")
-
-    opStatus = matrix1.interchange(row1, row2)
-    if opStatus:
-        print(opStatus)
+        matrix1.interchange(row1, row2)
+    except Exception as e:
+        print(e)
         return
-    history.add(operationresult.OperationResult(["interchange", row1, row2], matrix1))
+
+    history.add(operationresult.OperationResult(["interchange", row1 + 1, row2 + 1], matrix1))
 
     print("Operation complete!")
 
 
-def addRowsAction():
+def getOperationInputs():
     targetRow = int(input("Which row do you want to perform the operation on? "))
     sourceRow = int(input("Which row do you want to use to perform the operation? "))
     scalar = input("Enter the scalar to use: ")
 
+    return [targetRow -1, sourceRow - 1, scalar]
+
+
+def parseScalar(scalar):
     if scalar == "":
-        scalar = 1
+        return 1
     elif "/" in scalar:
-        scalar = Fraction(scalar)
+        return Fraction(scalar)
+    elif "." in scalar:
+        return float(scalar)
     else:
-        scalar = int(scalar)
+        return int(scalar)
 
-    opStatus = matrix1.additionRowOp(targetRow, sourceRow, scalar)
 
-    if opStatus:
-        print(opStatus);
+def addRowsAction():
+    inputs = getOperationInputs()
+    scalar = parseScalar(inputs[2])
+
+    try:
+        matrix1.additionRowOp(inputs[0], inputs[1], scalar)
+    except Exception as e:
+        print(e)
         return
 
-    history.add(operationresult.OperationResult(["add", targetRow, sourceRow, scalar], matrix1))
+    history.add(operationresult.OperationResult(["add", inputs[0] + 1, inputs[1] + 1, scalar], matrix1))
 
     print("Operation Complete!")
 
 
 def subtractRowsAction():
-    targetRow = int(input("Which row do you want to perform the operation on? "))
-    sourceRow = int(input("Which row do you want to use to perform the operation? "))
-    scalar = input("Enter the scalar to use: ")
+    inputs = getOperationInputs()
+    scalar = parseScalar(inputs[2])
 
-    if scalar == "":
-        scalar = 1
-    elif "/" in scalar:
-        scalar = Fraction(scalar)
-    else:
-        scalar = int(scalar)
-
-    opStatus = matrix1.subtractionRowOp(targetRow, sourceRow, scalar)
-
-    if opStatus:
-        print(opStatus)
+    try:
+        matrix1.subtractionRowOp(inputs[0], inputs[1], scalar)
+    except Exception as e:
+        print(e)
         return
 
-    history.add(operationresult.OperationResult(["subtract", targetRow, sourceRow, scalar], matrix1))
+    history.add(operationresult.OperationResult(["subtract", inputs[0] + 1, inputs[1] + 1, scalar], matrix1))
 
     print("Operation Complete!")
 
@@ -156,28 +179,25 @@ def scaleRowAction():
         return
 
     try:
-        targetRow = int(temp)
+        targetRow = int(temp) - 1
     except ValueError:
-        print("Invalid row selection. Returning you to main menu.")
+        print("That wasn't an integer. Returning you to main menu.")
         return
 
+    # get scalar and parse
     temp = input("Enter a scalar to scale by: ")
     if temp == "b":
         return
-    
-    if "/" in temp:
-        scalar = Fraction(temp)
-    elif temp == "":
-        scalar = 1
-    else:
-        scalar = float(temp)
+    scalar = parseScalar(temp)
 
-    opStatus = matrix1.scale(targetRow, scalar)
-    if opStatus:
-        print(opStatus)
+    try:
+        matrix1.scale(targetRow, scalar)
+
+    except Exception as e:
+        print(e + "Returning you to the main menu")
         return
-    
-    history.add(operationresult.OperationResult(["scale", targetRow, scalar], matrix1))
+   
+    history.add(operationresult.OperationResult(["scale", targetRow + 1, scalar], matrix1))
 
 
 def undo():
@@ -198,29 +218,25 @@ def new():
     getInputMatrix()
 
 
-def main():
-    # app = wx.App()
-    # frame = wxui.WxUI()
-    # app.MainLoop()
-    
-    greet()
-    getInputMatrix()
-    
-    quit = False
-    # main loop
-    while(not quit):
+def rowOpsMenu():
+    temp = ""
+    while True:
         print()
-        print("current: ")
+        print("Current: ")
+        print("------------------------------------------")
         matrix1.display()
+        print("------------------------------------------")
         print()
 
-        displayActionMenu()
+        displayRowOpMenu()
         temp = input()
 
-        # if quit
         if temp == "q":
             quitProgram()
-        
+
+        elif temp == "b":
+            return
+
         elif temp == "1":
             interchangeRowsAction()
         
@@ -233,14 +249,46 @@ def main():
         elif temp == "4":
             scaleRowAction()
 
-        elif temp == "5":
-            history.display()
-
-        elif temp == "6":
-            history.writeFile()
-        
         elif temp == "u":
             undo()
+
+        elif temp == "n":
+            new()
+
+
+def main():
+    # app = wx.App()
+    # frame = wxui.WxUI()
+    # app.MainLoop()
+    
+    greet()
+    getInputMatrix()
+    
+    quit = False
+    # main loop
+    while(not quit):
+        print()
+        print("Current: ")
+        print("------------------------------------------")
+        matrix1.display()
+        print("------------------------------------------")
+        print()
+
+        displayMainMenu()
+        temp = input()
+
+        # if quit
+        if temp == "q":
+            quitProgram()
+        
+        elif temp == "r":
+            rowOpsMenu()
+        
+        elif temp == "h":
+            history.display()
+
+        elif temp == "e":
+            history.writeFile()
 
         elif temp == "n":
             new()

@@ -3,7 +3,7 @@ from fractions import Fraction
 import copy
 import fractions
 import exception
-from exception.exceptions import UnevenRowsError
+from exception.exceptions import InvalidRowError, InvalidScalarError, UnevenRowsError
 from matrix import row
 
 
@@ -44,32 +44,39 @@ class Matrix:
         self.augmented = augmented
 
     def interchange(self, row1, row2):
-        if self.validateRowNumbers(row1, row2):
-            return self.validateRowNumbers(row1, row2)
+        try:
+            self.validateRowNumbers(row1, row2)
+        except:
+            raise
 
-        tempRow = self.matrix[row1 - 1]
-        self.matrix[row1 - 1] = self.matrix[row2 - 1]
-        self.matrix[row2 - 1] = tempRow
+        tempRow = self.matrix[row1]
+        self.matrix[row1] = self.matrix[row2]
+        self.matrix[row2] = tempRow
 
     def additionRowOp(self, targetRow, sourceRow, scalar):
-        if self.validateRowOpInputs(targetRow, sourceRow, scalar):
-            return self.validateRowOpInputs(targetRow, sourceRow, scalar)
-
-        self.performRowAddOrSubOp(targetRow, sourceRow, scalar, 1)
-
+        try:
+          self.performRowAddOrSubOp(targetRow, sourceRow, scalar, 1)  
+        except:
+            raise
+       
     def subtractionRowOp(self, targetRow, sourceRow, scalar):
-        if self.validateRowOpInputs(targetRow, sourceRow, scalar):
-            return self.validateRowOpInputs(targetRow, sourceRow, scalar)
-
-        self.performRowAddOrSubOp(targetRow, sourceRow, scalar, -1)
+        try:
+            self.performRowAddOrSubOp(targetRow, sourceRow, scalar, -1)
+        except:
+            raise
         
     def performRowAddOrSubOp(self, targetRow, sourceRow, scalar, opType):
-        scaledSource = self.matrix[sourceRow - 1].getScaledCopy(scalar)
+        try:
+            self.validateRowOpInputs(targetRow, sourceRow, scalar)
+        except:
+            raise
+
+        scaledSource = self.matrix[sourceRow].getScaledCopy(scalar)
         
         if opType == 1:
-            self.matrix[targetRow - 1].add(scaledSource)
+            self.matrix[targetRow].add(scaledSource)
         else:
-            self.matrix[targetRow - 1].subtract(scaledSource)
+            self.matrix[targetRow].subtract(scaledSource)
         
     def validateRowOpInputs(self, targetRow, sourceRow, scalar):
         if self.validateRowNumbers(targetRow, sourceRow):
@@ -79,33 +86,28 @@ class Matrix:
             return self.validateScalar(scalar)
 
     def validateRowNumbers(self, targetRow, sourceRow):
-        if self.validateRowNumber(targetRow):
-            return "The first row does not exist in the matrix"
-        if self.validateRowNumber(sourceRow):
-            return "The second row does not exist in the matrix"
+        try:
+            self.validateRowNumber(targetRow)
+            self.validateRowNumber(sourceRow)
+        except:
+            raise
 
     def validateScalar(self, scalar):
-        if not (scalar > 0 or scalar < 0) :
-            return "Scalar can not be 0"
+        if scalar == 0 :
+            raise InvalidScalarError
 
     def validateRowNumber(self, rowNumber):
-        if rowNumber <= 0:
-            return "Row number not valid"
-
-        elif rowNumber > (len(self.matrix)):
-            return "Row number not valid"
+        if (rowNumber < 0) or rowNumber >= (len(self.matrix)):
+            raise InvalidRowError(rowNumber)
 
     def scale(self, row, scalar):
-        # validate row number
-        if self.validateRowNumber(row):
-            return self.validateRowNumber(row)
-        
-        # validate scalar value
-        if self.validateScalar(scalar):
-            return self.validateScalar(scalar)
+        try:
+            self.validateRowNumber(row)
+            self.validateScalar(scalar)
+        except:
+            raise
 
-        # self.matrix[row - 1] = self.returnScaled(self.matrix[row - 1], scalar)
-        self.matrix[row - 1].scale(scalar)
+        self.matrix[row].scale(scalar)
 
     def returnScaled(self, row, scalar):
         temp = []
@@ -113,6 +115,7 @@ class Matrix:
         for value in row:
             if type(scalar) != int:
                 tempValue = Fraction(value) * scalar
+
                 if type(tempValue) == Fraction and tempValue.denominator == 1:
                     tempValue = int(tempValue)
                 elif type(tempValue) == Fraction and tempValue.numerator == 0:
@@ -135,15 +138,15 @@ class Matrix:
         else:
             columns = self.matrix[0].getLength() - 1
 
-        string = ""
+        string = "  "
 
         for i in range(columns):
-            string += '{: >10}'.format("x" + str(i + 1))
+            string += '{: >8}'.format("x" + str(i + 1))
         
         string += "\n"
 
         for i, row in enumerate(self.matrix):
-            rowString = "r" + str(i + 1) + row.getFormattedString() + "\n"
+            rowString = f"r{str(i + 1)} {row.getFormattedString()}\n"
 
             string += rowString
         return string
